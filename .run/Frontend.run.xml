@@ -5,8 +5,8 @@
     <scripts>
       <script value="start" />
     </scripts>
-    <node-interpreter value="project" />
-    <package-manager value="npm" />
+    <node-interpreter value="/home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/bin/node" />
+    <package-manager value="/home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/lib/node_modules/npm" />
     <envs>
       <env name="VITE_HOST" value="127.0.0.1" />
     </envs>
