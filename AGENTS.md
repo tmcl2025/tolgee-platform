@@ -248,6 +248,43 @@ cy.intercept('POST', '/v2/projects/*/keys*', {
 }).as('createKey');
 ```
 
+## Local Startup Troubleshooting
+
+Run the following commands from the platform repository root, which contains `email/` and `webapp/`.
+
+### Backend (BE)
+
+The IDE build failed before the application could launch because Gradle's `:data:buildEmails` task could not find `cross-env`. The error was `cross-env: not found`, and npm exited with code **127**. The email dependencies were missing.
+
+**Fix:** Reinstall the email dependencies:
+```bash
+npm ci --prefix email
+```
+Then rerun IntelliJ's **Application** configuration. The backend started on port **8080**, and `http://localhost:8080/actuator/health` returned HTTP 200 with `status: UP`.
+
+### Frontend (FE)
+
+The frontend initially failed with `vite: not found` because its dependencies were missing. Installation then encountered a peer dependency conflict and an out-of-sync lockfile. After installing dependencies, startup failed because the shell used **Node 18**, which was too old for the installed Vite version.
+
+**Fix used in this environment:**
+
+1. Install dependencies using Node 24, without changing the lockfile and with legacy peer dependency resolution:
+   ```bash
+   npm install --no-package-lock --legacy-peer-deps --prefix webapp
+   ```
+   Run this with Node 24 available to npm. In this session, the IDE's Node 24 executable was used to invoke npm's CLI directly.
+2. Create `webapp/node_modules/.bin/node` as a symlink to the IDE's Node 24 executable so Vite uses that runtime:
+   ```bash
+   ln -sfn /home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/bin/node webapp/node_modules/.bin/node
+   ```
+   This runtime path is specific to this environment. Reinstalling dependencies may remove the symlink; recreate it if needed, or configure Node 24 on PATH.
+3. Run IntelliJ's **Frontend** configuration, stored in `.run/Frontend.run.xml`. It runs the `start` script from `webapp` with `VITE_HOST=127.0.0.1`. Alternatively, run:
+   ```bash
+   npm start --prefix webapp -- --host 127.0.0.1
+   ```
+
+The frontend returned HTTP 200. Its default URL is `http://127.0.0.1:3000`; if port 3000 is occupied, Vite selects the next available port and prints the URL in the Run output.
+
 ## Git Workflow
 
 ### Branch Naming
