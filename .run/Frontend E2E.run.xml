@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Frontend E2E" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/webapp/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="start:e2e" />
+    </scripts>
+    <node-interpreter value="/home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/bin/node" />
+    <package-manager value="/home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/lib/node_modules/npm" />
+    <envs>
+      <env name="VITE_APP_API_URL" value="" />
+      <env name="VITE_DEV_PROXY_TARGET" value="http://localhost:8201" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>
