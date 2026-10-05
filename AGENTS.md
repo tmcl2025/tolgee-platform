@@ -169,6 +169,31 @@ useReportOnce('page_viewed', { pageName: 'settings' });
 
 ## Testing
 
+### Running Cypress Specs from IntelliJ
+
+When running a Cypress spec directly from the IntelliJ gutter or a Cypress run configuration (for example, `e2e/cypress/e2e/llmProviders/llmProviders.cy.ts`), start the tested environment first. The current Cypress run configurations have no before-launch tasks to start the servers automatically.
+
+1. Start the backend with the `e2e` Spring profile on port **8201** and wait for startup to finish:
+   ```bash
+   ./gradlew server-app:bootRun --args='--spring.profiles.active=e2e'
+   ```
+   Alternatively, use an IntelliJ backend configuration with the `e2e` profile. Start supporting services such as fake SMTP when needed with `./gradlew runDockerE2eDev`.
+2. Run IntelliJ's **Frontend E2E** configuration (`.run/Frontend E2E.run.xml`) and wait for its build and preview server to start on port **8202**.
+3. Run the Cypress spec or individual test from IntelliJ.
+
+**Frontend E2E** runs `npm run start:e2e` from `webapp`, which builds the frontend and serves it using `vite preview --port 8202 --strictPort --host 127.0.0.1`. It uses an empty `VITE_APP_API_URL` and `VITE_DEV_PROXY_TARGET=http://localhost:8201` to proxy API requests to the E2E backend.
+
+The defaults in `e2e/cypress/common/constants.ts` are `HOST=http://localhost:8202` for the browser UI and `API_URL=http://localhost:8201` for test setup and API calls. Keep the servers running across test runs; restart **Frontend E2E** after frontend code changes to rebuild the served files.
+
+Keep the environment pairs aligned:
+
+- Normal development: **Frontend** on port **3000** and **Application dev profile** backend on port **8080**.
+- Direct Cypress testing: **Frontend E2E** on port **8202** and backend with the **e2e** profile on port **8201**.
+
+A backend running only on port 8201 does not satisfy the normal frontend's proxy target on port 8080; this can produce HTTP 500 proxy responses and the UI's generic `Loadable error`.
+
+**Alternative:** IntelliJ's **E2E** Gradle configuration runs `runE2e`, which starts the Docker test environment automatically and directs Cypress to that environment. This workflow does not require manually starting **Frontend E2E**. See `e2e/README.md` for details.
+
 ### E2E Test Data Setup
 Creating E2E test data requires **3 components**:
 
