@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Frontend" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/webapp/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="start" />
+    </scripts>
+    <node-interpreter value="project" />
+    <package-manager value="npm" />
+    <envs>
+      <env name="VITE_HOST" value="127.0.0.1" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>
