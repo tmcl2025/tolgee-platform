@@ -5,8 +5,7 @@
     <scripts>
       <script value="start:e2e" />
     </scripts>
-    <node-interpreter value="/home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/bin/node" />
-    <package-manager value="/home/tmy/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.19.0/lib/node_modules/npm" />
+    <node-interpreter value="project" />
     <envs>
       <env name="VITE_APP_API_URL" value="" />
       <env name="VITE_DEV_PROXY_TARGET" value="http://localhost:8201" />
