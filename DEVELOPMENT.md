@@ -73,6 +73,37 @@ To learn more about externalized configuration in Spring boot, read [the docs](h
 
 Since we set the active profile to `dev`, Spring uses the `application-dev.yaml` configuration file.
 
+### Keeping the local database running across backend restarts
+
+If you already have the default `tolgee_postgres` container, start it with
+`docker start tolgee_postgres` and merge these settings into your local, gitignored
+`application-dev.yaml`:
+
+```yaml
+spring:
+  devtools:
+    restart:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:25432/postgres?reWriteBatchedInserts=true
+    username: postgres
+    password: postgres
+tolgee:
+  postgres-autostart:
+    enabled: false
+    stop: false
+```
+
+This connects to PostgreSQL independently of the backend lifecycle and still runs
+Liquibase migrations at startup. Setting only `postgres-autostart.stop: false`
+skips migrations when the autostart runner reuses an existing container.
+
+The `Application dev profile` IntelliJ configuration disables DevTools restart
+at JVM startup and automatic class updates on frame deactivation. Restart the
+backend explicitly after code changes, waiting for the previous process to exit.
+Run only one backend configuration on port 8080 at a time. If the database has
+been stopped separately, start its container before launching the backend.
+
 ## Writing emails
 
 Please refer to [email/HACKING.md](email/HACKING.md).

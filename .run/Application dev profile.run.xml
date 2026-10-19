@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Application dev profile" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="dev" />
-    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="DoNothing" />
+    <option name="VM_PARAMETERS" value="-Dspring.devtools.restart.enabled=false" />
     <module name="tolgee-platform.server-app.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.tolgee.Application" />
     <method v="2">
