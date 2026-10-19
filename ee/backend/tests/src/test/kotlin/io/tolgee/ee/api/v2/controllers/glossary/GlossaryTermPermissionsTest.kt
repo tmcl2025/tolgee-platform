@@ -182,6 +182,15 @@ class GlossaryTermPermissionsTest : AuthorizedControllerTest() {
   }
 
   @Test
+  fun `member cannot batch create glossary terms`() {
+    userAccount = testData.userMember
+    performAuthPost(
+      "/v2/organizations/${testData.organization.id}/glossaries/${testData.glossary.id}/terms/batch",
+      mapOf("terms" to listOf(mapOf("term" to "New term", "description" to ""))),
+    ).andIsForbidden
+  }
+
+  @Test
   fun `unaffiliated cannot create glossary term`() {
     userAccount = testData.userUnaffiliated
     val request =

@@ -3,6 +3,8 @@ package io.tolgee.ee.service.glossary
 import io.tolgee.component.machineTranslation.metadata.TranslationGlossaryItem
 import io.tolgee.constants.Message
 import io.tolgee.dtos.cacheable.ProjectDto
+import io.tolgee.ee.data.glossary.BatchCreateGlossaryTermRequest
+import io.tolgee.ee.data.glossary.BatchCreateGlossaryTermsResponse
 import io.tolgee.ee.data.glossary.CreateGlossaryTermRequest
 import io.tolgee.ee.data.glossary.CreateGlossaryTermWithTranslationRequest
 import io.tolgee.ee.data.glossary.GlossaryTermHighlight
@@ -24,6 +26,7 @@ import org.springframework.context.annotation.Primary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.text.Normalizer
 import java.util.Locale
 
 @Primary
@@ -146,6 +149,45 @@ class GlossaryTermService(
         translation,
       )
   }
+
+  @Transactional
+  fun createBatchWithTranslation(
+    organizationId: Long,
+    glossaryId: Long,
+    requests: List<BatchCreateGlossaryTermRequest>,
+  ): BatchCreateGlossaryTermsResponse {
+    val glossary = glossaryService.get(organizationId, glossaryId)
+    val locale = Locale.forLanguageTag(glossary.baseLanguageTag.replace('_', '-'))
+    val seenTerms =
+      findAllWithTranslations(glossary)
+        .flatMap { term -> term.translations.filter { it.languageTag == glossary.baseLanguageTag }.map { it.text } }
+        .mapTo(mutableSetOf()) { normalizeTerm(it, locale) }
+
+    var created = 0
+    var skippedDuplicates = 0
+    requests.forEach { request ->
+      val text = request.term.trim()
+      if (!seenTerms.add(normalizeTerm(text, locale))) {
+        skippedDuplicates++
+      } else {
+        createWithTranslation(
+          organizationId,
+          glossaryId,
+          CreateGlossaryTermWithTranslationRequest().apply {
+            this.text = text
+            description = request.description.trim()
+          },
+        )
+        created++
+      }
+    }
+    return BatchCreateGlossaryTermsResponse(created, skippedDuplicates)
+  }
+
+  private fun normalizeTerm(
+    value: String,
+    locale: Locale,
+  ): String = Normalizer.normalize(value, Normalizer.Form.NFKC).trim().lowercase(locale)
 
   @Transactional
   fun update(

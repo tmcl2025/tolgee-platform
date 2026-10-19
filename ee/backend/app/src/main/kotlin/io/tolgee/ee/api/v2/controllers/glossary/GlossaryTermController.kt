@@ -12,6 +12,8 @@ import io.tolgee.ee.api.v2.hateoas.assemblers.glossary.SimpleGlossaryTermWithTra
 import io.tolgee.ee.api.v2.hateoas.model.glossary.GlossaryTermModel
 import io.tolgee.ee.api.v2.hateoas.model.glossary.SimpleGlossaryTermModel
 import io.tolgee.ee.api.v2.hateoas.model.glossary.SimpleGlossaryTermWithTranslationsModel
+import io.tolgee.ee.data.glossary.BatchCreateGlossaryTermsRequest
+import io.tolgee.ee.data.glossary.BatchCreateGlossaryTermsResponse
 import io.tolgee.ee.data.glossary.CreateGlossaryTermWithTranslationRequest
 import io.tolgee.ee.data.glossary.CreateUpdateGlossaryTermResponse
 import io.tolgee.ee.data.glossary.DeleteMultipleGlossaryTermsRequest
@@ -73,6 +75,21 @@ class GlossaryTermController(
       term = simpleGlossaryTermModelAssembler.toModel(term),
       translation = translation?.let { glossaryTermTranslationModelAssembler.toModel(translation) },
     )
+  }
+
+  @PostMapping("/terms/batch")
+  @Operation(summary = "Create multiple glossary terms with base-language entries")
+  @AllowApiAccess(AuthTokenType.ONLY_PAT)
+  @RequiresOrganizationRole(OrganizationRoleType.MAINTAINER)
+  @RequiresFeatures(Feature.GLOSSARY)
+  @Transactional
+  @RequestActivity(ActivityType.GLOSSARY_TERM_CREATE)
+  fun createBatch(
+    @PathVariable organizationId: Long,
+    @PathVariable glossaryId: Long,
+    @RequestBody @Valid dto: BatchCreateGlossaryTermsRequest,
+  ): BatchCreateGlossaryTermsResponse {
+    return glossaryTermService.createBatchWithTranslation(organizationId, glossaryId, dto.terms)
   }
 
   @DeleteMapping("/terms")

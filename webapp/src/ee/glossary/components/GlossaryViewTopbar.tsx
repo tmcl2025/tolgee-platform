@@ -1,4 +1,4 @@
-import { Box, IconButton, styled, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, styled, Tooltip } from '@mui/material';
 import { SecondaryBarSearchField } from 'tg.component/layout/SecondaryBarSearchField';
 import { GlossaryViewLanguageSelect } from 'tg.ee.module/glossary/components/GlossaryViewLanguageSelect';
 import { BaseViewAddButton } from 'tg.component/layout/BaseViewAddButton';
@@ -18,6 +18,7 @@ const StyledContainerInner = styled(Box)`
 type Props = {
   onCreateTerm?: () => void;
   onImport?: () => void;
+  onExtractTerms?: () => void;
   onSearch?: (search: string) => void;
   search?: string;
   selectedLanguages?: string[];
@@ -28,6 +29,7 @@ type Props = {
 export const GlossaryViewTopbar = ({
   onCreateTerm,
   onImport,
+  onExtractTerms,
   onSearch,
   search,
   selectedLanguages,
@@ -52,6 +54,15 @@ export const GlossaryViewTopbar = ({
             </Box>
           </Box>
           <Box display="flex" gap={1}>
+            {onExtractTerms && (
+              <Button
+                size="small"
+                onClick={onExtractTerms}
+                data-cy="glossary-term-extraction-open"
+              >
+                {t('glossary_term_extraction_open_button')}
+              </Button>
+            )}
             <GlossaryViewLanguageSelect
               value={selectedLanguages}
               onValueChange={setSelectedLanguages}

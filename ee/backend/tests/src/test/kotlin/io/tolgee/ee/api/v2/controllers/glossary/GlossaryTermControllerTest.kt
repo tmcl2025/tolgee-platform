@@ -177,6 +177,54 @@ class GlossaryTermControllerTest : AuthorizedControllerTest() {
   }
 
   @Test
+  fun `batch creates accepted terms and skips duplicate translations`() {
+    val response =
+      performAuthPost(
+        "/v2/organizations/${testData.organization.id}/glossaries/${testData.glossary.id}/terms/batch",
+        mapOf(
+          "terms" to
+            listOf(
+              mapOf("term" to "New Candidate", "description" to "Reviewed description"),
+              mapOf("term" to "new candidate", "description" to "Duplicate in request"),
+              mapOf("term" to "apple", "description" to "Already in glossary"),
+            ),
+        ),
+      ).andIsOk
+
+    response.andAssertThatJson {
+      node("created").isEqualTo(1)
+      node("skippedDuplicates").isEqualTo(2)
+    }
+
+    performAuthGet(
+      "/v2/organizations/${testData.organization.id}/glossaries/${testData.glossary.id}/termsWithTranslations",
+    ).andIsOk
+      .andAssertThatJson {
+        inPath("_embedded.glossaryTerms[*].description").isArray.contains("Reviewed description")
+        inPath("_embedded.glossaryTerms[*].translations[*].text").isArray.contains("New Candidate")
+      }
+  }
+
+  @Test
+  fun `extracts candidates from assigned project source strings`() {
+    performAuthPost(
+      "/v2/projects/${testData.project.id}/glossaries/${testData.glossary.id}/term-candidates",
+      emptyMap<String, String>(),
+    ).andIsOk
+      .andAssertThatJson {
+        node("candidates").isArray.hasSize(0)
+      }
+  }
+
+  @Test
+  fun `term extraction requires a glossary with matching base language`() {
+    performAuthPost(
+      "/v2/projects/${testData.project.id}/glossaries/${testData.emptyGlossary.id}/term-candidates",
+      emptyMap<String, String>(),
+    ).andIsBadRequest
+  }
+
+  @Test
   fun `does not create glossary term when feature disabled`() {
     enabledFeaturesProvider.forceEnabled = emptySet()
     val request =

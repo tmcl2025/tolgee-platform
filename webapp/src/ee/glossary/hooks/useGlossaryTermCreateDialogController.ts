@@ -26,6 +26,7 @@ export const useGlossaryTermCreateDialogController = () => {
   const isOpen = createTermDialogOpen && canCreate;
 
   return {
+    canCreate,
     onCreateTerm: canCreate ? onCreateTerm : undefined,
     createTermDialogOpen: isOpen,
     createTermDialogProps: {

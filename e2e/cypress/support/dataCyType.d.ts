@@ -285,6 +285,14 @@ declare namespace DataCy {
         "glossary-panel-searched-list": true;
         "glossary-projects-info": true;
         "glossary-switch": true;
+        "glossary-term-extraction-accept": true;
+        "glossary-term-extraction-cancel": true;
+        "glossary-term-extraction-candidate-checkbox": true;
+        "glossary-term-extraction-description": true;
+        "glossary-term-extraction-open": true;
+        "glossary-term-extraction-project-select": true;
+        "glossary-term-extraction-run": true;
+        "glossary-term-extraction-select-all": true;
         "glossary-term-highlight": true;
         "glossary-term-list-item": true;
         "glossary-term-preview-cancel-button": true;

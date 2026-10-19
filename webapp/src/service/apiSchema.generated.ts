@@ -250,6 +250,9 @@ export interface paths {
     post: operations["create_18"];
     delete: operations["deleteMultiple"];
   };
+  "/v2/organizations/{organizationId}/glossaries/{glossaryId}/terms/batch": {
+    post: operations["createBatch"];
+  };
   "/v2/organizations/{organizationId}/glossaries/{glossaryId}/terms/{termId}": {
     get: operations["get_16"];
     put: operations["update_11"];
@@ -634,6 +637,9 @@ export interface paths {
   };
   "/v2/projects/{projectId}/glossaries": {
     get: operations["getAssignedGlossaries"];
+  };
+  "/v2/projects/{projectId}/glossaries/{glossaryId}/term-candidates": {
+    post: operations["extractTermCandidates"];
   };
   "/v2/projects/{projectId}/glossary-highlights": {
     post: operations["getHighlights"];
@@ -1617,6 +1623,19 @@ export interface components {
     };
     AzureContentStorageConfigModel: {
       containerName?: string;
+    };
+    BatchCreateGlossaryTermRequest: {
+      description: string;
+      term: string;
+    };
+    BatchCreateGlossaryTermsRequest: {
+      terms: components["schemas"]["BatchCreateGlossaryTermRequest"][];
+    };
+    BatchCreateGlossaryTermsResponse: {
+      /** Format: int32 */
+      created: number;
+      /** Format: int32 */
+      skippedDuplicates: number;
     };
     BatchJobModel: {
       /**
@@ -3209,6 +3228,8 @@ export interface components {
         | "llm_provider_timeout"
         | "no_llm_provider_configured"
         | "glossary_not_found"
+        | "glossary_base_language_mismatch"
+        | "glossary_term_extraction_language_not_supported"
         | "glossary_term_not_found"
         | "glossary_term_translation_not_found"
         | "glossary_non_translatable_term_cannot_be_translated"
@@ -3472,6 +3493,25 @@ export interface components {
       id: number;
       name: string;
       organizationOwner: components["schemas"]["SimpleOrganizationModel"];
+    };
+    GlossaryTermCandidate: {
+      /** @description Example source strings containing the term */
+      examples: string[];
+      /**
+       * Format: int32
+       * @description Number of distinct keys containing the term
+       */
+      keyCount: number;
+      /**
+       * Format: int32
+       * @description Number of occurrences across source strings
+       */
+      occurrenceCount: number;
+      /** @description Suggested term in the project's source language */
+      term: string;
+    };
+    GlossaryTermCandidatesResponse: {
+      candidates: components["schemas"]["GlossaryTermCandidate"][];
     };
     GlossaryTermHighlightModel: {
       position: components["schemas"]["PositionModel"];
@@ -7199,6 +7239,8 @@ export interface components {
         | "llm_provider_timeout"
         | "no_llm_provider_configured"
         | "glossary_not_found"
+        | "glossary_base_language_mismatch"
+        | "glossary_term_extraction_language_not_supported"
         | "glossary_term_not_found"
         | "glossary_term_translation_not_found"
         | "glossary_non_translatable_term_cannot_be_translated"
@@ -12022,6 +12064,59 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["DeleteMultipleGlossaryTermsRequest"];
+      };
+    };
+  };
+  createBatch: {
+    parameters: {
+      path: {
+        organizationId: number;
+        glossaryId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BatchCreateGlossaryTermsResponse"];
+        };
+      };
+      /** Bad Request */
+      400: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** Unauthorized */
+      401: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** Forbidden */
+      403: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** Not Found */
+      404: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchCreateGlossaryTermsRequest"];
       };
     };
   };
@@ -18163,6 +18258,54 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["CollectionModelSimpleGlossaryModel"];
+        };
+      };
+      /** Bad Request */
+      400: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** Unauthorized */
+      401: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** Forbidden */
+      403: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** Not Found */
+      404: {
+        content: {
+          "application/json":
+            | components["schemas"]["ErrorResponseTyped"]
+            | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+    };
+  };
+  extractTermCandidates: {
+    parameters: {
+      path: {
+        projectId: number;
+        glossaryId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GlossaryTermCandidatesResponse"];
         };
       };
       /** Bad Request */

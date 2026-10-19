@@ -1,5 +1,6 @@
 package io.tolgee.repository
 
+import io.tolgee.dtos.queryResults.KeyTranslationText
 import io.tolgee.dtos.queryResults.KeyView
 import io.tolgee.dtos.queryResults.keyDisabledLanguages.KeyDisabledLanguagesQueryResultView
 import io.tolgee.model.Language
@@ -18,6 +19,22 @@ import java.util.Optional
 @Repository
 @Lazy
 interface KeyRepository : JpaRepository<Key, Long> {
+  @Query(
+    """
+    select new io.tolgee.dtos.queryResults.KeyTranslationText(k.id, t.text)
+    from Key k join k.translations t
+    where k.project.id = :projectId
+      and t.language.id = :languageId
+      and t.text is not null
+      and t.text <> ''
+      and k.deletedAt is null
+    """,
+  )
+  fun getTranslationsForTermExtraction(
+    projectId: Long,
+    languageId: Long,
+  ): List<KeyTranslationText>
+
   fun countByProjectId(projectId: Long): Long
 
   @Query(
