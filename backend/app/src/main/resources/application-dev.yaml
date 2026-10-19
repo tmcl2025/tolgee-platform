@@ -1,0 +1,14 @@
+# Local development database is managed independently of the application.
+# Start the existing container with: docker start tolgee_postgres
+spring:
+  devtools:
+    restart:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:25432/postgres?reWriteBatchedInserts=true
+    username: postgres
+    password: postgres
+tolgee:
+  postgres-autostart:
+    enabled: false
+    stop: false
