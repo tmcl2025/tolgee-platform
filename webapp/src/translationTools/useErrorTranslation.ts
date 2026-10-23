@@ -235,6 +235,11 @@ export function useErrorTranslation() {
         return t('suggestion_must_be_plural');
       case 'duplicate_suggestion':
         return t('duplicate_suggestion');
+      case 'suggestions_disabled':
+        return t(
+          'suggestions_disabled',
+          'Suggestions are disabled for this project'
+        );
       case 'operation_not_permitted_in_read_only_mode':
         return t('operation_not_permitted_in_read_only_mode');
       case 'cannot_delete_branch_with_children':
@@ -507,6 +512,15 @@ export function useErrorTranslation() {
         return t(
           'auto_upgrade_cannot_be_disabled_over_limit',
           'Auto-upgrade cannot be turned off while your organization is over its word allowance. Reduce your content or upgrade your plan first.'
+        );
+      case 'plan_tier_below_current_words':
+        return t(
+          'plan_tier_below_current_words',
+          'Your organization has {currentWords, number} hosted words, more than the {includedWords, number} this plan includes. Pick a bigger tier.',
+          {
+            currentWords: Number(params?.[0] || 0),
+            includedWords: Number(params?.[1] || 0),
+          }
         );
       case 'cannot_downgrade_word_tier':
         return t(
