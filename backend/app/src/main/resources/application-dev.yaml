@@ -1,14 +1,6 @@
 # Local development database is managed independently of the application.
-# Start the existing container with: docker start tolgee_postgres
 spring:
   devtools:
+# could cause constant restart due to switch frame, might due to remote dev? hence now disabled
     restart:
       enabled: false
-  datasource:
-    url: jdbc:postgresql://localhost:25432/postgres?reWriteBatchedInserts=true
-    username: postgres
-    password: postgres
-tolgee:
-  postgres-autostart:
-    enabled: false
-    stop: false
