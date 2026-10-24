@@ -92,6 +92,7 @@ export default defineConfig(({ mode }) => {
             [
               '/v2',
               '/api',
+              '/websocket',
               '/oauth2/authorize',
               '/oauth2/token',
               '/oauth2/revoke',
@@ -103,6 +104,7 @@ export default defineConfig(({ mode }) => {
               {
                 target: process.env.VITE_DEV_PROXY_TARGET,
                 changeOrigin: false,
+                ws: path === '/websocket',
               },
             ])
           )
